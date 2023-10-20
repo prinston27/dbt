@@ -1,5 +1,4 @@
 WITH transformed_host_neighbourhood AS (
-    -- Transform the HOST_NEIGHBOURHOOD to its corresponding LGA (LISTING_NEIGHBOURHOOD)
     SELECT
         LISTING_NEIGHBOURHOOD AS host_neighbourhood_lga,
         HOST_ID,
@@ -11,7 +10,6 @@ WITH transformed_host_neighbourhood AS (
 ),
 
 aggregated AS (
-    -- Aggregate the data based on host_neighbourhood_lga and Month/Year
     SELECT
         t.host_neighbourhood_lga,
         EXTRACT(MONTH FROM t.scraped_date) AS month,
