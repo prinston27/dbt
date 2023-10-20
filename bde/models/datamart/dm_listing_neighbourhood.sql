@@ -1,4 +1,19 @@
-WITH base AS (
+{{
+    config(
+        unique_key='brand_id'
+    )
+}}
+
+with
+
+source  as (
+
+    select * from {{ ref('facts_snapshot') }}
+
+),
+
+
+base AS (
     SELECT 
         LISTING_NEIGHBOURHOOD,
         EXTRACT(MONTH FROM TO_DATE(SCRAPED_DATE, 'YYYY-MM-DD')) AS MONTH,
@@ -10,7 +25,7 @@ WITH base AS (
         PRICE,
         NUMBER_OF_REVIEWS,
         PRICE * AVAILABILITY_30 AS EstimatedRevenuePerListing
-    FROM RAW.facts
+    FROM source
 ),
 
 metrics AS (

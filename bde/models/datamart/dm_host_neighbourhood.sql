@@ -1,4 +1,18 @@
-WITH transformed_host_neighbourhood AS (
+{{
+    config(
+        unique_key='brand_id'
+    )
+}}
+
+with
+
+source  as (
+
+    select * from {{ ref('facts_snapshot') }}
+
+),
+
+transformed_host_neighbourhood AS (
     SELECT
         LISTING_NEIGHBOURHOOD AS host_neighbourhood_lga,
         HOST_ID,
@@ -6,7 +20,7 @@ WITH transformed_host_neighbourhood AS (
         CASE WHEN HAS_AVAILABILITY = 't' THEN 1 ELSE 0 END AS IsActive,
         CASE WHEN HOST_IS_SUPERHOST = 't' THEN 1 ELSE 0 END AS IsSuperhost,
         (30 - AVAILABILITY_30) * PRICE AS EstimatedRevenuePerListing
-    FROM RAW.facts
+    FROM source
 ),
 
 aggregated AS (

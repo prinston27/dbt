@@ -1,4 +1,18 @@
-WITH base AS (
+{{
+    config(
+        unique_key='brand_id'
+    )
+}}
+
+with
+
+source  as (
+
+    select * from {{ ref('facts_snapshot') }}
+
+),
+
+base AS (
     SELECT
         DATE_PART('YEAR', SCRAPED_DATE::DATE) AS year,
         DATE_PART('MONTH', SCRAPED_DATE::DATE) AS month,
@@ -13,7 +27,7 @@ WITH base AS (
         NUMBER_OF_REVIEWS,
         30 - availability_30 AS Number_of_stays,
         (30 - availability_30) * PRICE AS EstimatedRevenuePerListing
-    FROM RAW.facts
+    FROM source
 ),
 
 agg AS (
