@@ -42,3 +42,7 @@ models:
     staging:
       +materialized: view
       +schema: staging
+    snapshots:
+      <resource-path>:
+        +strategy: timestamp
+        +updated_at: column_name
