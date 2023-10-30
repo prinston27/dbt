@@ -1,21 +1,17 @@
-{{
+{{ 
     config(
         unique_key='brand_id'
-    )
+    ) 
 }}
 
-with
-
-source  as (
-
-    select * from {{ ref('facts_snapshot') }}
-
+WITH source AS (
+    SELECT * FROM {{ ref('facts_listing') }}
 ),
 
 base AS (
     SELECT
-        DATE_PART('YEAR', SCRAPED_DATE::DATE) AS year,
-        DATE_PART('MONTH', SCRAPED_DATE::DATE) AS month,
+        DATE_PART('YEAR', DATE::DATE) AS year,
+        DATE_PART('MONTH', DATE::DATE) AS month,
         PROPERTY_TYPE,
         ROOM_TYPE,
         ACCOMMODATES,
@@ -80,6 +76,14 @@ SELECT
     CASE 
         WHEN DistinctHostCount = 0 THEN NULL
         ELSE TotalEstimatedRevenue::FLOAT / DistinctHostCount 
-    END AS EstimatedRevenuePerHost
+    END AS EstimatedRevenuePerHost,
+    COALESCE(
+        100.0 * (ActiveListingsCount - LAG(ActiveListingsCount) OVER(PARTITION BY PROPERTY_TYPE, ROOM_TYPE, ACCOMMODATES ORDER BY year, month)) 
+             / NULLIF(LAG(ActiveListingsCount) OVER(PARTITION BY PROPERTY_TYPE, ROOM_TYPE, ACCOMMODATES ORDER BY year, month), 0), 0
+    ) AS PercentageChangeForActiveListings,
+    COALESCE(
+        100.0 * ((TotalListings - ActiveListingsCount) - LAG(TotalListings - ActiveListingsCount) OVER(PARTITION BY PROPERTY_TYPE, ROOM_TYPE, ACCOMMODATES ORDER BY year, month)) 
+             / NULLIF(LAG(TotalListings - ActiveListingsCount) OVER(PARTITION BY PROPERTY_TYPE, ROOM_TYPE, ACCOMMODATES ORDER BY year, month), 0), 0
+    ) AS PercentageChangeForInactiveListings
 FROM agg
 ORDER BY PROPERTY_TYPE, ROOM_TYPE, ACCOMMODATES, year, month

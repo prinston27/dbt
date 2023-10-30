@@ -1,8 +1,8 @@
-{% snapshot snapshot_room %}
+{% snapshot room_snapshot %}
     
     {{
         config(
-            target_schema='snapshots',
+            target_schema='raw',
             strategy='timestamp',
             updated_at='SCRAPED_DATE',
             unique_key='LISTING_ID'

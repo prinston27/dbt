@@ -1,8 +1,8 @@
-{% snapshot snapshot_host %}
+{% snapshot host_snapshot %}
     
     {{
         config(
-            target_schema='snapshots',
+            target_schema='raw',
             strategy='timestamp',
             updated_at='SCRAPED_DATE',
             unique_key='HOST_ID'

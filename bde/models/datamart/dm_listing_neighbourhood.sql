@@ -8,7 +8,7 @@ with
 
 source  as (
 
-    select * from {{ ref('facts_snapshot') }}
+    select * from {{ ref('facts_listing') }}
 
 ),
 
@@ -16,8 +16,8 @@ source  as (
 base AS (
     SELECT 
         LISTING_NEIGHBOURHOOD,
-        EXTRACT(MONTH FROM TO_DATE(SCRAPED_DATE, 'YYYY-MM-DD')) AS MONTH,
-        EXTRACT(YEAR FROM TO_DATE(SCRAPED_DATE, 'YYYY-MM-DD')) AS YEAR,
+        EXTRACT(MONTH FROM TO_DATE(date, 'YYYY-MM-DD')) AS MONTH,
+        EXTRACT(YEAR FROM TO_DATE(date, 'YYYY-MM-DD')) AS YEAR,
         CASE WHEN HAS_AVAILABILITY = 't' THEN 1 ELSE 0 END AS IsActive,
         CASE WHEN HOST_IS_SUPERHOST = 't' THEN 1 ELSE 0 END AS IsSuperhost,
         REVIEW_SCORES_RATING,
@@ -75,3 +75,4 @@ SELECT
     END AS InactiveListingsChangePercent
 FROM metrics m
 ORDER BY m.LISTING_NEIGHBOURHOOD, m.YEAR, m.MONTH
+
